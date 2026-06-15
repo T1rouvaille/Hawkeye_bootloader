@@ -83,7 +83,7 @@ typedef enum
     CMD_POWCAL,             /* AT+POWCAL=<CH>,<power> 或 AT+POWCAL=STOP/SAVE/STATUS */
     CMD_LASER_CTRL,         /* AT+LASER=<CH>,<ON|OFF> */
     CMD_IMU_DEBUG,          /* AT+IMUDBG=<0|1> IMU角度实时打印开关 */
-    CMD_FW_UPDATE,          /* AT+FWUPDATE 进入固件更新模式 */
+    CMD_FW_UPDATE,          /* 5 — 进入固件更新模式 */
 } uart_cmd_t;
 
 /* ======================================================================
@@ -134,7 +134,7 @@ static uart_cmd_t get_uart_cmd(char * str)
     if (strncmp(str, "AT+POWCAL=", 10) == 0)  return CMD_POWCAL;
     if (strncmp(str, "AT+LASER=", 9) == 0)    return CMD_LASER_CTRL;
     if (strncmp(str, "AT+IMUDBG=", 10) == 0)  return CMD_IMU_DEBUG;
-    if (strcmp(str, "AT+FWUPDATE") == 0)          return CMD_FW_UPDATE;
+    if (strcmp(str, "5") == 0)                    return CMD_FW_UPDATE;
     return CMD_NONE;
 }
 
@@ -1050,9 +1050,9 @@ void Debug_UART9_ProcessReceivedData(void)
         break;
 
         /* ==================================================================
-         *  AT+FWUPDATE — 进入固件更新模式
+         *  5 — 进入固件更新模式
          *
-         *  功能: 通过 noinit RAM 通知 Bootloader 进入 XModem 固件更新模式
+         *  功能: 通过 Code Flash 写入 ENTER_UPDATE_MODE 通知 Bootloader 进入 XModem 固件更新模式
          *  响应: +FWUPDATE:REBOOT  然后 MCU 复位
          * ================================================================== */
         case CMD_FW_UPDATE:
