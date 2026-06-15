@@ -1,0 +1,26 @@
+# Build outputs
+*.o
+*.elf
+*.bin
+*.srec
+*.hex
+*.map
+*.siz
+*.sbd
+*.in
+
+# Debugger
+*.launch
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Claude / IDE config
+.claude/
+.mcp.json
+
+# Code graph / spec workflow
+.codegraph/
+.spec-workflow/
