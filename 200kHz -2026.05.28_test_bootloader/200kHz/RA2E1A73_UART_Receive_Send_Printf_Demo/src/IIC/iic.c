@@ -133,18 +133,15 @@ fsp_err_t iim42351_read_bytes(uint8_t reg, uint8_t* buf, uint8_t len)
 }
 
 /* ========== 通用 IMU 初始化 (IIM42351/ICM40608 共用) ========== */
-static int8_t imu_chip_init(uint8_t highSampleRate, uint8_t who_am_i, const char *chip_name)
+static int8_t imu_chip_init(uint8_t highSampleRate, uint8_t who_am_i)
 {
     fsp_err_t err;
     uint8_t id = 0;
 
-    /* WHO_AM_I 检测 */
+    /* WHO_AM_I 检测 (静默探测, 不在探测阶段打印 NOT FOUND) */
     err = iim42351_read_reg(MPUREG_WHO_AM_I, &id);
     if (err != FSP_SUCCESS || id != who_am_i)
     {
-        char msg[48];
-        sprintf(msg, "+RESP:%s NOT FOUND\r\n", chip_name);
-        uart9_send_blocking(msg);
         return -1;
     }
 
@@ -200,13 +197,13 @@ int8_t IIM42351_getAcc(int16_t* acc)
 /* ========== 统一 IMU 初始化: 自动检测传感器类型 ========== */
 int8_t imu_init(uint8_t highSampleRate)
 {
-    if (imu_chip_init(highSampleRate, IIM_WHO_AM_I_DEFAULT, "IIM42351") == 0)
+    if (imu_chip_init(highSampleRate, IIM_WHO_AM_I_DEFAULT) == 0)
     {
         g_imu_sensor = IMU_SENSOR_IIM42351;
         uart9_send_blocking("+RESP:IMU IIM42351\r\n");
         return 0;
     }
-    if (imu_chip_init(highSampleRate, ICM_WHO_AM_I_DEFAULT, "ICM40608") == 0)
+    if (imu_chip_init(highSampleRate, ICM_WHO_AM_I_DEFAULT) == 0)
     {
         g_imu_sensor = IMU_SENSOR_ICM40608;
         uart9_send_blocking("+RESP:IMU ICM40608\r\n");
