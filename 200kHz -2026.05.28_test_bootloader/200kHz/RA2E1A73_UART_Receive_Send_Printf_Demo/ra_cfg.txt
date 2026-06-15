@@ -212,7 +212,7 @@ FSP Configuration
     
   Module "Flash (r_flash_lp)"
     Parameter Checking: Default (BSP)
-    Code Flash Programming: Disabled
+    Code Flash Programming: Enabled
     Data Flash Programming: Enabled
     Data Flash Background Operation Support: Enabled
     

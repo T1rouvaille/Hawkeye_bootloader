@@ -23,24 +23,129 @@ struct boot_rsp *rsp;
 //                            "\\/    \\/\\___|_| |_|\\__,_|",
 //};
 
+/*
+ * Firmware update via XModem — reusable function.
+ * Can be called from menu or auto-update path.
+ * Returns 1 on success (OTA flag set), 0 on failure.
+ */
+int firmware_update_via_xmodem(void)
+{
+    volatile fsp_err_t err;
+    uint8_t tx_str[80];
+    uint32_t CRC_rom;
+    uint8_t OTA_FLAG_END[4] = {0x55, 0x55, 0x55, 0x55};
+    unsigned char xm_err;
+
+    /* Blank check */
+    sprintf((char *)tx_str, "Blank checking the App area...\r\n");
+    comms_send(tx_str, strlen((char *)tx_str));
+    flash_result_t fresult;
+    err = g_flash0.p_api->blankCheck(g_flash0.p_ctrl, APP_IMAGE_START_ADDRESS,
+                                     (APP_IMAGE_END_ADDRESS - APP_IMAGE_START_ADDRESS), &fresult);
+    if (FSP_SUCCESS != err)
+    {
+        sprintf((char *)tx_str, "ERROR: Blank checking the App area\r\n");
+        comms_send(tx_str, strlen((char *)tx_str));
+        return 0;
+    }
+
+    if (fresult != FLASH_RESULT_BLANK)
+    {
+        sprintf((char *)tx_str, "Erasing the App area...\r\n");
+        comms_send(tx_str, strlen((char *)tx_str));
+        ThreadsAndInterrupts(DISABLE);
+        err = g_flash0.p_api->erase(g_flash0.p_ctrl, APP_IMAGE_START_ADDRESS, APP_IMAGE_NUM_BLOCKS);
+        ThreadsAndInterrupts(RE_ENABLE);
+        if (FSP_SUCCESS != err)
+        {
+            sprintf((char *)tx_str, "ERROR: Erasing the App area\r\n");
+            comms_send(tx_str, strlen((char *)tx_str));
+            return 0;
+        }
+        sprintf((char *)tx_str, "App area erased\r\n");
+        comms_send(tx_str, strlen((char *)tx_str));
+    }
+    else
+    {
+        sprintf((char *)tx_str, "App area blank\r\n");
+        comms_send(tx_str, strlen((char *)tx_str));
+    }
+
+    /* XModem download and flash programming */
+    sprintf((char *)tx_str, "Start Xmodem transfer...\r\n");
+    comms_send(tx_str, strlen((char *)tx_str));
+    xm_err = XmodemDownloadAndProgramFlash(APP_IMAGE_START_ADDRESS);
+    if (XM_OK != xm_err)
+    {
+        switch (xm_err)
+        {
+            case XM_ADDRESS_ERROR:
+                sprintf((char *)tx_str, "ERROR: Flash address invalid\r\n");
+                break;
+            case XM_TIMEOUT:
+                sprintf((char *)tx_str, "ERROR: Timeout during Xmodem download\r\n");
+                break;
+            case XM_PROG_FAIL:
+                sprintf((char *)tx_str, "ERROR: Flash programming error\r\n");
+                break;
+            default:
+                sprintf((char *)tx_str, "ERROR: unknown (%d)\r\n", xm_err);
+                break;
+        }
+        comms_send(tx_str, strlen((char *)tx_str));
+        return 0;
+    }
+
+    sprintf((char *)tx_str, "Flash image download successful\r\n");
+    comms_send(tx_str, strlen((char *)tx_str));
+
+    /* Calculate CRC of downloaded image */
+    CRC_rom = calcrc(APP_IMAGE_START_ADDRESS, (CRC_ADDRESS - APP_IMAGE_START_ADDRESS));
+    sprintf((char *)tx_str, "CRC: %04X\r\n", CRC_rom);
+    comms_send(tx_str, strlen((char *)tx_str));
+
+    /* Write CRC to flash */
+    {
+        uint32_t crc_data = (uint32_t)CRC_rom;
+        ThreadsAndInterrupts(DISABLE);
+        err = g_flash0.p_api->write(g_flash0.p_ctrl, (uint32_t)&crc_data, CRC_ADDRESS, 4);
+        ThreadsAndInterrupts(RE_ENABLE);
+        if (FSP_SUCCESS != err)
+        {
+            sprintf((char *)tx_str, "Write CRC to flash failed\r\n");
+            comms_send(tx_str, strlen((char *)tx_str));
+            return 0;
+        }
+    }
+
+    /* Set OTA flag */
+    sprintf((char *)tx_str, "Setting the OTA flag\r\n");
+    comms_send(tx_str, strlen((char *)tx_str));
+    ThreadsAndInterrupts(DISABLE);
+    err = g_flash0.p_api->write(g_flash0.p_ctrl, (uint32_t)&OTA_FLAG_END[0], OTA_FLAG_END_ADDRESS, 4);
+    ThreadsAndInterrupts(RE_ENABLE);
+    if (FSP_SUCCESS != err)
+    {
+        sprintf((char *)tx_str, "Set OTA flag failed\r\n");
+        comms_send(tx_str, strlen((char *)tx_str));
+        return 0;
+    }
+
+    sprintf((char *)tx_str, "OTA update complete, OTA flag set\r\n");
+    comms_send(tx_str, strlen((char *)tx_str));
+    return 1;
+}
+
 void menu(void)
 {
 //    struct boot_rsp rsp;
     volatile fsp_err_t err = 0;
     uint8_t tx_str[80];
     uint8_t rx_str[20] = {0};
-    uint16_t    i = 0;
-//    uint8_t      selection;
     uint32_t len;
-    unsigned char xm_err;
     uint8_t     reselect = 1;
-    uint8_t     ret;
-    uint16_t    flag_start = 0xFFFF;
     uint32_t    flag_end = 0xFFFF;
-    uint16_t    flag_start_end = 0xFFFF;
     uint32_t  CRC_rom, CRC_ccitt;
-//    uint8_t     OTA_FLAG_START[4] = {0xAA, 0xFF, 0xFF, 0xFF};
-    uint8_t     OTA_FLAG_END[4] = {0x55, 0x55, 0x55, 0x55};
 
     FSP_PARAMETER_NOT_USED(err);
 
@@ -66,104 +171,9 @@ void menu(void)
                 break;
 
             case '2':   //Update App ONLY
-                sprintf((char *)tx_str, "Blank checking the App area...\r\n");
-                comms_send(tx_str, strlen((char *)tx_str));
-                flash_result_t fresult;
-                err = g_flash0.p_api->blankCheck(g_flash0.p_ctrl, APP_IMAGE_START_ADDRESS, (APP_IMAGE_END_ADDRESS - APP_IMAGE_START_ADDRESS), &fresult);
-                if(FSP_SUCCESS == err)
+                if (firmware_update_via_xmodem())
                 {
-                    if(fresult == FLASH_RESULT_BLANK)
-                    {
-                        sprintf((char *)tx_str, "App area blank\r\n");
-                        comms_send(tx_str, strlen((char *)tx_str));
-                    }
-                    else
-                    {
-                        sprintf((char *)tx_str, "Erasing the App area...\r\n");
-                        comms_send(tx_str, strlen((char *)tx_str));
-                        ThreadsAndInterrupts(DISABLE);
-                        err = g_flash0.p_api->erase(g_flash0.p_ctrl, APP_IMAGE_START_ADDRESS, APP_IMAGE_NUM_BLOCKS);
-                        ThreadsAndInterrupts(RE_ENABLE);
-                        if(FSP_SUCCESS == err)
-                        {
-                            sprintf((char *)tx_str, "App area erased\r\n");
-                            comms_send(tx_str, strlen((char *)tx_str));
-                        }
-                        else
-                        {
-                            sprintf((char *)tx_str, "ERROR: Erasing the App area\r\n");
-                            comms_send(tx_str, strlen((char *)tx_str));
-                            break;
-                        }
-                    }
-
-                    /* XModem download and flash programming */
-                    sprintf((char *)tx_str, "Start Xmodem transfer...\r\n");
-                    comms_send(tx_str, strlen((char *)tx_str));
-                    xm_err = XmodemDownloadAndProgramFlash(APP_IMAGE_START_ADDRESS);
-                    if(XM_OK == xm_err)
-                    {
-                        sprintf((char *)tx_str, "Flash image download successful\r\n");
-                        comms_send(tx_str, strlen((char *)tx_str));
-
-                        /* Calculate CRC of downloaded image */
-                        CRC_rom = calcrc(APP_IMAGE_START_ADDRESS, (CRC_ADDRESS - APP_IMAGE_START_ADDRESS));
-                        sprintf((char *)tx_str, "CRC: %04X\r\n", CRC_rom);
-                        comms_send(tx_str, strlen((char *)tx_str));
-
-                        /* Write CRC to flash */
-                        uint32_t crc_data = (uint32_t)CRC_rom;
-                        ThreadsAndInterrupts(DISABLE);
-                        err = g_flash0.p_api->write(g_flash0.p_ctrl, (uint32_t)&crc_data, CRC_ADDRESS, 4);
-                        ThreadsAndInterrupts(RE_ENABLE);
-                        if( FSP_SUCCESS != err ){
-                            sprintf((char *)tx_str, "Write CRC to flash failed\r\n");
-                            comms_send(tx_str, strlen((char *)tx_str));
-                            break;
-                        }
-
-                        /* Set OTA flag */
-                        sprintf((char *)tx_str, "Setting the OTA flag\r\n");
-                        comms_send(tx_str, strlen((char *)tx_str));
-                        ThreadsAndInterrupts(DISABLE);
-                        err = g_flash0.p_api->write(g_flash0.p_ctrl, (uint32_t)&OTA_FLAG_END[0], OTA_FLAG_END_ADDRESS, 4);
-                        ThreadsAndInterrupts(RE_ENABLE);
-                        if( FSP_SUCCESS != err ){
-                            sprintf((char *)tx_str, "Set OTA flag failed\r\n");
-                            comms_send(tx_str, strlen((char *)tx_str));
-                        }
-                        else{
-                            reselect = 0;
-                        }
-                    }
-                    else
-                    {
-                        switch(xm_err)
-                        {
-                            case XM_ADDRESS_ERROR:
-                                sprintf((char *)tx_str, "ERROR: Flash address invalid\r\n");
-                            break;
-
-                            case XM_TIMEOUT:
-                                sprintf((char *)tx_str, "ERROR: Timeout during Xmodem download\r\n");
-                            break;
-
-                            case XM_PROG_FAIL:
-                                sprintf((char *)tx_str, "ERROR: Flash programming error\r\n");
-                            break;
-
-                            default:
-                                sprintf((char *)tx_str, "ERROR: unknown (%d)\r\n", xm_err);
-                            break;
-                        }
-
-                        comms_send(tx_str, strlen((char *)tx_str));
-                    }
-                }
-                else
-                {
-                    sprintf((char *)tx_str, "ERROR: Blank checking the secondary slot\r\n");
-                    comms_send(tx_str, strlen((char *)tx_str));
+                    reselect = 0;
                 }
                 break;
 
@@ -202,9 +212,9 @@ void menu(void)
 //        CRC_rom = calcrc(0x4000, 4);
     }
     else{
-        sprintf((char *)tx_str, "Resetting the device..\r\n");
+        sprintf((char *)tx_str, "OTA flag corrupted (0x%08X), re-entering menu...\r\n", (unsigned int)flag_end);
         comms_send(tx_str, strlen((char *)tx_str));
-        NVIC_SystemReset();
+        /* Continue the outer while(1) — re-enter menu instead of infinite reset */
     }
 }
 

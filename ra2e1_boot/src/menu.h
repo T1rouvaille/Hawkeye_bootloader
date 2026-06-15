@@ -13,5 +13,6 @@
 #define MENU_H_
 
 void menu(void);
+int  firmware_update_via_xmodem(void);
 
 #endif /* MENU_H_ */

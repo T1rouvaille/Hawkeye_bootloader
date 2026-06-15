@@ -292,6 +292,21 @@ int bl2_main(void)
         }
     }
 
+    /* Check if App requested firmware update (wrote magic to OTA flag) */
+    if (ENTER_UPDATE_MODE == flag_end)
+    {
+        snprintf((char *)str, sizeof(str), "\r\nFirmware update requested by App...\r\n");
+        comms_send(str, strlen((char *)str));
+
+        if (firmware_update_via_xmodem())
+        {
+            /* Success - OTA flag is set, jump to new App */
+            do_boot(&rsp);
+            /* Should not return */
+        }
+        /* Failed - fall through to menu */
+    }
+
 //    BOOT_LOG_INF("Starting bootloader");
     menu();
 

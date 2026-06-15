@@ -21,6 +21,10 @@
 #define OTA_FLAG_END_ADDRESS          (APP_IMAGE_END_ADDRESS - 4)
 #define CRC_ADDRESS                   (APP_IMAGE_END_ADDRESS - 8)
 #define APP_IMAGE_NUM_BLOCKS            ((APP_IMAGE_END_ADDRESS - APP_IMAGE_START_ADDRESS) / FLASH_BLOCK_SIZE)
+
+/* Magic value written to OTA_FLAG_END_ADDRESS by App to trigger firmware update */
+#define ENTER_UPDATE_MODE           0x5555AAAA
+
 //#define SECONDARY_IMAGE_NUM_BLOCKS      ((SECONDARY_IMAGE_END_ADDRESS - SECONDARY_IMAGE_START_ADDRESS) / FLASH_BLOCK_SIZE)
 
 typedef enum e_enable_disable

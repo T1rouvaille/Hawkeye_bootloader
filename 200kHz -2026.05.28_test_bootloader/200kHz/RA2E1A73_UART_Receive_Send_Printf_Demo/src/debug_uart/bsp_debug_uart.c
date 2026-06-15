@@ -14,6 +14,10 @@
 #include "stats/bsp_stats.h"
 #include "key/bsp_irq_key.h"        /* gLaserOn[3] */
 
+/* OTA update trigger — must match bootloader's header.h */
+#define OTA_FLAG_ADDR            0x0001FFFC
+#define ENTER_UPDATE_MODE        0x5555AAAA
+
 char str_buf[RX_BUFFER_SIZE + 1] = {0};
 volatile bool reference_voltage_received = false;
 volatile int reference_voltage = 0;
@@ -79,6 +83,7 @@ typedef enum
     CMD_POWCAL,             /* AT+POWCAL=<CH>,<power> 或 AT+POWCAL=STOP/SAVE/STATUS */
     CMD_LASER_CTRL,         /* AT+LASER=<CH>,<ON|OFF> */
     CMD_IMU_DEBUG,          /* AT+IMUDBG=<0|1> IMU角度实时打印开关 */
+    CMD_FW_UPDATE,          /* AT+FWUPDATE 进入固件更新模式 */
 } uart_cmd_t;
 
 /* ======================================================================
@@ -129,6 +134,7 @@ static uart_cmd_t get_uart_cmd(char * str)
     if (strncmp(str, "AT+POWCAL=", 10) == 0)  return CMD_POWCAL;
     if (strncmp(str, "AT+LASER=", 9) == 0)    return CMD_LASER_CTRL;
     if (strncmp(str, "AT+IMUDBG=", 10) == 0)  return CMD_IMU_DEBUG;
+    if (strcmp(str, "AT+FWUPDATE") == 0)          return CMD_FW_UPDATE;
     return CMD_NONE;
 }
 
@@ -1040,6 +1046,74 @@ void Debug_UART9_ProcessReceivedData(void)
             {
                 uart9_send_blocking("+LASER:ERR,BUSY\r\n");
             }
+        }
+        break;
+
+        /* ==================================================================
+         *  AT+FWUPDATE — 进入固件更新模式
+         *
+         *  功能: 通过 noinit RAM 通知 Bootloader 进入 XModem 固件更新模式
+         *  响应: +FWUPDATE:REBOOT  然后 MCU 复位
+         * ================================================================== */
+        case CMD_FW_UPDATE:
+        {
+            fsp_err_t    err;
+            uint32_t     update_flag = ENTER_UPDATE_MODE;
+            uint32_t     saved_primask;
+            uint32_t     saved_systick;
+
+            uart9_send_blocking("+FWUPDATE:ERASING OTA FLAG...\r\n");
+
+            /* Ensure flash driver is open */
+            err = g_flash0.p_api->open(g_flash0.p_ctrl, g_flash0.p_cfg);
+            if (FSP_SUCCESS != err)
+            {
+                /* May already be open — try to continue */
+            }
+
+            /* --- Critical section: disable interrupts for code flash operation --- */
+            saved_primask = __get_PRIMASK();
+            saved_systick = SysTick->CTRL;
+            SysTick->CTRL  = 0;
+            NVIC_DisableIRQ(SysTick_IRQn);
+            NVIC_ClearPendingIRQ(SysTick_IRQn);
+            __disable_irq();
+
+            /* Erase last 2KB block (0x1E000-0x1FFFF) containing OTA flag */
+            err = g_flash0.p_api->erase(g_flash0.p_ctrl, 0x0001E000, 1);
+            if (FSP_SUCCESS == err)
+            {
+                /* Write 0x5555AAAA to OTA flag address (0x1FFFC) */
+                err = g_flash0.p_api->write(g_flash0.p_ctrl,
+                                            (uint32_t)&update_flag,
+                                            OTA_FLAG_ADDR, 4);
+            }
+
+            /* --- Restore interrupts --- */
+            SysTick->CTRL = saved_systick;
+            NVIC_EnableIRQ(SysTick_IRQn);
+            __set_PRIMASK(saved_primask);
+
+            /* Close flash driver */
+            g_flash0.p_api->close(g_flash0.p_ctrl);
+
+            wdt_feed();
+
+            if (FSP_SUCCESS == err)
+            {
+                uart9_send_blocking("+FWUPDATE:REBOOTING...\r\n");
+            }
+            else
+            {
+                uart9_send_blocking("+FWUPDATE:FLASH WRITE FAILED\r\n");
+            }
+
+            /* Delay to let UART TX complete */
+            for (volatile uint32_t d = 0; d < 500000UL; d++) { __NOP(); }
+
+            /* Reboot into bootloader */
+            NVIC_SystemReset();
+            while (1) { }
         }
         break;
 
