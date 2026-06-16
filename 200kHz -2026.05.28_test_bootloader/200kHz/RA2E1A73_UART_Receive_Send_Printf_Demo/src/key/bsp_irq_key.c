@@ -127,6 +127,11 @@ static void key_process(key_t *k)
     } else {
         k->debounce_time = 0;
         k->last_level = sample;
+
+        /* 仅按下需要消抖，释放立即生效，缩短按键周期 */
+        if (sample != KEY_ACTIVE_LEVEL) {
+            k->stable_level = sample;
+        }
     }
 
     if (k->stable_level == KEY_ACTIVE_LEVEL) {
