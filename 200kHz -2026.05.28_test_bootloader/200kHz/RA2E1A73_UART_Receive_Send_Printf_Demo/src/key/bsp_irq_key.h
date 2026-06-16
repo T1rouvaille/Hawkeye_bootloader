@@ -39,6 +39,7 @@ typedef struct {
     uint16_t debounce_time;   // 消抖计时
     uint16_t press_time;      // 按下持续时间
     uint8_t long_sent;        // 长按是否已触发
+    uint8_t short_sent;       // 短按是否已触发 (消抖完成即触发)
     key_event_type_t event;   // 当前事件
     const char *name;         // 按键名字（可选用于调试）
 } key_t;

@@ -66,6 +66,7 @@ static void key_resync_state(key_t *k, uint8_t level)
     k->debounce_time = 0;
     k->press_time    = 0;
     k->long_sent     = 0;
+    k->short_sent    = 0;
     k->event         = KEY_NONE;
 }
 
@@ -130,17 +131,21 @@ static void key_process(key_t *k)
 
     if (k->stable_level == KEY_ACTIVE_LEVEL) {
         if (k->press_time < 60000) k->press_time += KEY_SCAN_PERIOD_MS;
+
+        /* 消抖完成后立即触发短按，不等释放 */
+        if (k->short_sent == 0) {
+            k->event      = KEY_SHORT_PRESS;
+            k->short_sent = 1;
+        }
+
         if ((k->press_time >= KEY_LONG_PRESS_MS) && (k->long_sent == 0)) {
             k->event     = KEY_LONG_PRESS;
             k->long_sent = 1;
         }
     } else {
-        if ((k->press_time >= KEY_DEBOUNCE_MS) &&
-            (k->press_time  < KEY_LONG_PRESS_MS)) {
-            k->event = KEY_SHORT_PRESS;
-        }
         k->press_time = 0;
         k->long_sent  = 0;
+        k->short_sent = 0;
     }
 }
 
