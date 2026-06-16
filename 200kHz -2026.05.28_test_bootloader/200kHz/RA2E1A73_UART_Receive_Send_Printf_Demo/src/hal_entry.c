@@ -346,13 +346,13 @@ void hal_entry(void)
                 key_handle_events();
                 lock_sw_read();
 
-                /* 上电后延迟 100ms 恢复激光状态 */
+                /* 上电后延迟 100ms 恢复激光状态 (10ms槽位, 计数10次=100ms) */
                 static bool     laser_state_restored = false;
-                static uint16_t restore_delay_ms    = 0;
+                static uint16_t restore_delay_10ms   = 0;
                 if (!laser_state_restored)
                 {
-                    restore_delay_ms++;
-                    if (restore_delay_ms >= 100)
+                    restore_delay_10ms++;
+                    if (restore_delay_10ms >= 10)
                     {
                         key_restore_on_boot();
                         laser_state_restored = true;
