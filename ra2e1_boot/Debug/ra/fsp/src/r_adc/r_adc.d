@@ -1,4 +1,4 @@
-ra/board/ra2e1_ek/board_leds.o: ../ra/board/ra2e1_ek/board_leds.c \
+ra/fsp/src/r_adc/r_adc.o: ../ra/fsp/src/r_adc/r_adc.c \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/bsp_api.h \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/fsp_common_api.h \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/fsp_version.h \
@@ -12,9 +12,6 @@ ra/board/ra2e1_ek/board_leds.o: ../ra/board/ra2e1_ek/board_leds.c \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_feature.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_peripheral.h \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_cfg/fsp_cfg/bsp/board_cfg.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_init.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_leds.h \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_gen/vector_data.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_exceptions.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\cmsis\device\renesas\include\renesas.h \
@@ -44,7 +41,13 @@ ra/board/ra2e1_ek/board_leds.o: ../ra/board/ra2e1_ek/board_leds.c \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/fsp_common_api.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_compiler_support.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_delay.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_mcu_api.h
+ c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_mcu_api.h \
+ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_cfg/fsp_cfg/r_adc_cfg.h \
+ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/instances/r_adc.h \
+ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/r_adc_api.h \
+ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/bsp_api.h \
+ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/r_elc_api.h \
+ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/r_transfer_api.h
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/bsp_api.h:
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/fsp_common_api.h:
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/fsp_version.h:
@@ -58,9 +61,6 @@ c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_feature.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_peripheral.h:
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_cfg/fsp_cfg/bsp/board_cfg.h:
-c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board.h:
-c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_init.h:
-c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_leds.h:
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_gen/vector_data.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_exceptions.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\cmsis\device\renesas\include\renesas.h:
@@ -91,3 +91,9 @@ C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_compiler_support.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_delay.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_mcu_api.h:
+C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_cfg/fsp_cfg/r_adc_cfg.h:
+C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/instances/r_adc.h:
+C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/r_adc_api.h:
+C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/bsp_api.h:
+C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/r_elc_api.h:
+C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra/fsp/inc/api/r_transfer_api.h:

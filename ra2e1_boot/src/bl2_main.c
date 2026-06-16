@@ -26,6 +26,23 @@
 #include "menu.h"
 #include "header.h"
 #include "crc16.h"
+
+/* 电池低压阈值 (ADC 原始值, 14.5V) — 与 App hawkeye_config.h 保持一致 */
+#define BOOT_BAT_LOW_ADC    (1784U)
+
+/* 电源控制引脚 — 与 App bsp_led.h 保持一致 */
+#define BOOT_Batt_OFF       R_IOPORT_PinWrite(&g_ioport_ctrl, BSP_IO_PORT_04_PIN_09, BSP_IO_LEVEL_LOW)
+#define BOOT_Power_En_OFF   R_IOPORT_PinWrite(&g_ioport_ctrl, BSP_IO_PORT_04_PIN_08, BSP_IO_LEVEL_LOW)
+#define BOOT_EN1_OFF        R_IOPORT_PinWrite(&g_ioport_ctrl, BSP_IO_PORT_09_PIN_13, BSP_IO_LEVEL_LOW)
+
+/* ADC 扫描完成回调 — 设置标志位, 与 App bsp_adc.c 逻辑一致 */
+volatile bool g_boot_scan_complete = false;
+void adc_callback(adc_callback_args_t *p_args)
+{
+    (void)p_args;
+    g_boot_scan_complete = true;
+}
+
 #if 0   //WangJin 2021.04.13
 #include "bl2_util.h"
 #include "target.h"
@@ -247,11 +264,60 @@ int bl2_main(void)
 #endif
 
     struct boot_rsp rsp;
-//    int rc = ARM_DRIVER_OK;;
 
 #if defined(__ARM_ARCH_8M_MAIN__) || defined(__ARM_ARCH_8M_BASE__)
     __set_MSPLIM(msp_stack_bottom);
 #endif
+
+    /* ==================================================================
+     *  电池低压检查 — 最早执行, 与 App hal_entry.c 逻辑完全一致
+     *  电压 < BAT_BOOT_MIN_ADC 直接断电, 无 UART 输出
+     * ================================================================== */
+    {
+        fsp_err_t adc_err;
+        adc_err = R_ADC_Open(&g_adc0_ctrl, &g_adc0_cfg);
+        if (FSP_SUCCESS == adc_err)
+        {
+            adc_err = R_ADC_ScanCfg(&g_adc0_ctrl, &g_adc0_channel_cfg);
+            if (FSP_SUCCESS == adc_err)
+            {
+                R_ADC_ScanStart(&g_adc0_ctrl);
+
+                /* 4 次采样取平均, 每次等待 ADC 回调 scan_complete */
+                uint32_t bat_sum = 0;
+                for (int i = 0; i < 4; i++)
+                {
+                    g_boot_scan_complete = false;
+                    while (!g_boot_scan_complete)
+                    {
+                        /* 等待 ADC 扫描完成中断 */
+                    }
+                    g_boot_scan_complete = false;
+                    uint16_t tmp = 0;
+                    R_ADC_Read(&g_adc0_ctrl, ADC_CHANNEL_9, &tmp);
+                    bat_sum += tmp;
+                }
+                R_ADC_ScanStop(&g_adc0_ctrl);
+                uint16_t bat_adc_boot = (uint16_t)(bat_sum / 4);
+
+                if (bat_adc_boot < BOOT_BAT_LOW_ADC)
+                {
+                    /* 电压不够, 关闭所有外设供电, 等电容放完电自然断电 */
+                    R_ADC_Close(&g_adc0_ctrl);
+                    BOOT_Batt_OFF;
+                    BOOT_Power_En_OFF;
+                    BOOT_EN1_OFF;
+                    while (1)
+                    {
+                        /* 不喂狗, CPU休眠等电容放电, IWDT超时复位后电压仍低则再次进入此处 */
+                        __WFI();
+                    }
+                }
+            }
+            R_ADC_Close(&g_adc0_ctrl);
+        }
+        /* ADC 初始化失败不阻塞, 继续正常开机流程 */
+    }
 
 #if MCUBOOT_LOG_LEVEL > MCUBOOT_LOG_LEVEL_OFF
     stdio_init();

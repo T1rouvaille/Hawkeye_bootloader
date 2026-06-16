@@ -41,35 +41,28 @@
 
 /* 电池电压阈值 (ADC 原始值，非 mV)
  * 换算公式: mV = adc * 3300 * 48 / 5 / 4095 */
-#define BAT_FULL_MV             (2553U)     /* 满电 ≈ 20.0V */
-#define BAT_HIGH_MV             (2442U)     /* 19.2V: FULL→HIGH 边界 */
-#define BAT_MID_MV              (2274U)     /* 17.9V: HIGH→MID  边界 */
-#define BAT_LOW_MV              (1835U)     /* 14.5V: MID →关断  边界 */
+#define BAT_HIGH_MV             (2492U)     /* 19.2V: FULL→HIGH 边界 */
+#define BAT_MID_MV              (2324U)     /* 17.9V: HIGH→MID  边界 */
+#define BAT_LOW_MV              (1834U)     /* 14.5V: MID →关断  边界 */
+
+/** 开机最低电压阈值 (ADC 原始值) */
+#define BAT_BOOT_MIN_ADC        (1850U)
+
 
 /** 电池状态迟滞量 (ADC 原始值) */
-#define BAT_HYST                (30U)
+#define BAT_HYST                (50U)
 
 /** 激光IR压降补偿 (ADC 原始值)
  *  激光开启时电池电压会跌落, 补偿后状态机判断更准确
  *  H 电流最大, V1/V2 电流相近
  *  测量方法: 对比激光全关和全开时的电池ADC差值 */
-#define BAT_IR_DROP_H_ADC       80      /* H 激光压降补偿 */
-#define BAT_IR_DROP_V1_ADC      50      /* V1激光压降补偿 */
-#define BAT_IR_DROP_V2_ADC      50      /* V2激光压降补偿 */
+#define BAT_IR_DROP_H_ADC       0       /* H 激光压降补偿 (TODO: 实测后确定) */
+#define BAT_IR_DROP_V1_ADC      0       /* V1激光压降补偿 (TODO: 实测后确定) */
+#define BAT_IR_DROP_V2_ADC      0       /* V2激光压降补偿 (TODO: 实测后确定) */
 
 /** 低压关机确认次数 — battery_voltage_task() 每 50ms 调用一次
  *  5 次 × 50ms = 250ms 连续确认，防止瞬时掉压误关机 */
 #define BAT_CRITICAL_CONFIRM_COUNT  (1U)
-
-/** 运行时电池 ADC 滤波强度：filtered += (raw - filtered) / 2^N
- *  N 越大越稳，响应越慢；3 表示约 1/8 的一阶低通 */
-#define BAT_RUNTIME_FILTER_SHIFT    (3U)
-
-/** 开机最低电压阈值 (ADC 原始值) */
-#define BAT_BOOT_MIN_ADC        (1800U)
-
-/** 开机 ADC 采样次数 */
-#define BAT_BOOT_SAMPLE_COUNT   (10U)
 
 /* ======================================================================
  *  按键参数

@@ -67,10 +67,10 @@
       <configSetting altId="p913.output.low" configurationId="p913"/>
       <configSetting altId="p914.output.low" configurationId="p914"/>
       <configSetting altId="p915.output.high" configurationId="p915"/>
-      <configSetting altId="sci0.rxd.p100" configurationId="sci0.rxd"/>
-      <configSetting altId="sci0.txd.p101" configurationId="sci0.txd"/>
-      <configSetting altId="sci9.rxd.p110" configurationId="sci9.rxd" isUsedByDriver="true"/>
-      <configSetting altId="sci9.txd.p109" configurationId="sci9.txd" isUsedByDriver="true"/>
+      <configSetting altId="sci0.rxd.p100" configurationId="sci0.rxd" isUsedByDriver="true"/>
+      <configSetting altId="sci0.txd.p101" configurationId="sci0.txd" isUsedByDriver="true"/>
+      <configSetting altId="sci9.rxd.p110" configurationId="sci9.rxd"/>
+      <configSetting altId="sci9.txd.p109" configurationId="sci9.txd"/>
     </pincfg>
   </raPinConfiguration>
 </raConfiguration>

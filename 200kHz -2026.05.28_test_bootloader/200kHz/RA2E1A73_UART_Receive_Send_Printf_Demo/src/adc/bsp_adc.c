@@ -8,9 +8,6 @@
 #include <string.h>
 #include <key/bsp_irq_key.h>
 
-/* ===== 电池电压相关宏定义 ===== */
-#define ADC_TO_BAT_MV(adc_val)  ((uint32_t)(adc_val) * 3300UL * 48UL / 5UL / 4095UL)
-
 /* ===== 激光ADC buffer ===== */
 volatile uint16_t buf_pd1[ADC_BUF_SIZE]   = {0};
 volatile uint16_t buf_ld1_1[ADC_BUF_SIZE] = {0};
@@ -60,7 +57,6 @@ static uint8_t      g_bat_critical_count = 0;
 static bool         g_bat_shutdown_pending      = false;
 static bool         g_system_power_off_pending  = false;
 static power_off_reason_t g_system_power_off_reason = POWER_OFF_REASON_UNKNOWN;
-static uint16_t     g_bat_adc_filtered   = 0;
 
 /* ===== 外部依赖 ===== */
 extern volatile bool pwm_in_high_phase;
@@ -280,21 +276,7 @@ void battery_temp_check(void)
 /* ===== 以下电池管理代码完全不变 ===== */
 void battery_voltage_task(void)
 {
-    uint16_t bat_adc_raw = Read_ADC_Voltage_Value_BAT();
-    uint16_t bat_adc;
-
-    if (g_bat_adc_filtered == 0U)
-    {
-        g_bat_adc_filtered = bat_adc_raw;
-    }
-    else
-    {
-        int32_t delta = (int32_t)bat_adc_raw - (int32_t)g_bat_adc_filtered;
-        g_bat_adc_filtered = (uint16_t)((int32_t)g_bat_adc_filtered +
-                                        (delta >> BAT_RUNTIME_FILTER_SHIFT));
-    }
-
-    bat_adc = g_bat_adc_filtered;
+    uint16_t bat_adc = Read_ADC_Voltage_Value_BAT();
 
     /* IR压降补偿: 激光开启时电池电压跌落, 补偿后状态机更准确 */
     {
@@ -457,8 +439,6 @@ void system_power_on(void)
 
 void battery_state_init(uint16_t bat_adc)
 {
-    g_bat_adc_filtered = bat_adc;
-
     if      (bat_adc >= BAT_HIGH_MV) g_bat_state = BAT_STATE_FULL;
     else if (bat_adc >= BAT_MID_MV)  g_bat_state = BAT_STATE_HIGH;
     else if (bat_adc >= BAT_LOW_MV)  g_bat_state = BAT_STATE_MID;

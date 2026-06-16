@@ -12,9 +12,6 @@ ra_gen/common_data.o: ../ra_gen/common_data.c ../ra_gen/common_data.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_feature.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_peripheral.h \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_cfg/fsp_cfg/bsp/board_cfg.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_init.h \
- c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_leds.h \
  C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_gen/vector_data.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_exceptions.h \
  c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\cmsis\device\renesas\include\renesas.h \
@@ -64,9 +61,6 @@ c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_feature.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\ra2e1\bsp_peripheral.h:
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_cfg/fsp_cfg/bsp/board_cfg.h:
-c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board.h:
-c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_init.h:
-c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\board\ra2e1_ek\board_leds.h:
 C:/Users/AT403/Desktop/Hawkeye_code/RA2E1_OTA_Boot_App/ra2e1_boot/ra_gen/vector_data.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\mcu\all\bsp_exceptions.h:
 c:\users\at403\desktop\hawkeye_code\ra2e1_ota_boot_app\ra2e1_boot\ra\fsp\src\bsp\cmsis\device\renesas\include\renesas.h:

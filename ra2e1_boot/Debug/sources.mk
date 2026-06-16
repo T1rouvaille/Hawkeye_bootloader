@@ -53,9 +53,9 @@ MAP :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-ra/board/ra2e1_ek \
 ra/fsp/src/bsp/cmsis/Device/RENESAS/Source \
 ra/fsp/src/bsp/mcu/all \
+ra/fsp/src/r_adc \
 ra/fsp/src/r_flash_lp \
 ra/fsp/src/r_gpt \
 ra/fsp/src/r_ioport \
