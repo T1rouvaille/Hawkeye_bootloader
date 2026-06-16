@@ -24,3 +24,14 @@ Desktop.ini
 # Code graph / spec workflow
 .codegraph/
 .spec-workflow/
+
+# Node.js / npm
+node_modules/
+package-lock.json
+package.json
+
+# Temp files
+*.raw
+*q*.jpg
+*p*.png
+*x*.png
