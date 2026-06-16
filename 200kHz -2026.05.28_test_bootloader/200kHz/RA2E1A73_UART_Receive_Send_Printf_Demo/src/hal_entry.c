@@ -400,6 +400,14 @@ void hal_entry(void)
                 CNT[5] = 0;
 
                 battery_temp_check();
+
+                /* 电池ADC原始值, 每秒输出一次 */
+                {
+                    char bat_str[32];
+                    snprintf(bat_str, sizeof(bat_str), "+BAT_ADC:%u\r\n",
+                             Read_ADC_Voltage_Value_BAT());
+                    uart9_send_blocking(bat_str);
+                }
             }
 
             /* ---- 按秒统计 + 无激光超时关机 ---- */
