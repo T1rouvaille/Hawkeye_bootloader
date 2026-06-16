@@ -115,8 +115,8 @@ FSP Configuration
       P201 26 - - - - Disabled - - "SYSTEM0: MD" - None - - 
       P204 24 - - - - Disabled - - "AGT1: AGTIO1; CAC0: CACREF; CTSU0: TS00; GPT_OPS0: GTIW; IIC0: SCL0; SCI0: SCK0; SCI9: SCK9" - None - - 
       P205 23 - ARDUINO_TX_MIKROBUS_TX - - Disabled - - "AGT1: AGTO1; CGC0: CLKOUT; GPT_OPS0: GTIV; ICU0: IRQ01; SCI0: SDA0; SCI0: TXD0; SCI9: CTS9" - None - - 
-      P206 22 GPIO ARDUINO_RX_MIKROBUS_RX - None "Output mode (Initial Low)" CMOS - "GPT_OPS0: GTIU; ICU0: IRQ00; SCI0: RXD0; SCI0: SCL0" - IO - - 
-      P207 21 GPIO ARDUINO_RESET_MIKROBUS_RST - - "Output mode (Initial Low)" CMOS - - - IO - - 
+      P206 22 GPIO ARDUINO_RX_MIKROBUS_RX - None "Output mode (Initial High)" CMOS - "GPT_OPS0: GTIU; ICU0: IRQ00; SCI0: RXD0; SCI0: SCL0" - IO - - 
+      P207 21 GPIO ARDUINO_RESET_MIKROBUS_RST - - "Output mode (Initial High)" CMOS - - - IO - - 
       P208 20 GPIO PMOD1_RST - - "Output mode (Initial Low)" CMOS - "AGT0: AGTOB0" - IO - - 
       P212 10 - - - - Disabled - - "AGT1: AGTEE1; CGC0: EXTAL; GPT_POEG1: GTETRGB; GPT0: GTIOC0B; ICU0: IRQ03; SCI1: RXD1; SCI1: SCL1" - None - - 
       P213 9 - - - - Disabled - - "CGC0: XTAL; GPT_POEG0: GTETRGA; GPT0: GTIOC0A; ICU0: IRQ02; SCI1: SDA1; SCI1: TXD1" - None - - 
@@ -141,7 +141,7 @@ FSP Configuration
       P502 51 SCI1_SCL1 GROVE2_SCL - - "Peripheral mode" "n-ch open drain" None "ADC0: AN018; GPT_OPS0: GTIW; SCI1: RXD1; SCI1: SCL1" - IO - - 
       P913 19 GPIO USER_LED3 - - "Output mode (Initial Low)" CMOS - "AGT1: AGTIO1; GPT_POEG0: GTETRGA" - IO - - 
       P914 18 GPIO USER_LED2 - - "Output mode (Initial Low)" CMOS - "AGT1: AGTOA1; GPT_POEG1: GTETRGB" - IO - - 
-      P915 17 GPIO USER_LED1 - - "Output mode (Initial Low)" CMOS - - - IO - - 
+      P915 17 GPIO USER_LED1 - - "Output mode (Initial High)" CMOS - - - IO - - 
       RES# 25 SYSTEM0_RES - - - - - - - - IO "Read only" - 
       VCC 11 SYSTEM0_VCC - - - - - - - - IO "Read only" - 
       VCC 39 SYSTEM0_VCC - - - - - - - - IO "Read only" - 

@@ -52,7 +52,6 @@ typedef enum {
     BAT_STATE_FULL = 0,
     BAT_STATE_HIGH,
     BAT_STATE_MID,
-    BAT_STATE_LOW,
     BAT_STATE_CRITICAL,
 } bat_state_t;
 
@@ -321,16 +320,12 @@ void battery_voltage_task(void)
             else if (bat_adc <  (BAT_MID_MV  - BAT_HYST)) new_state = BAT_STATE_MID;
             break;
         case BAT_STATE_MID:
-            if      (bat_adc >= (BAT_MID_MV + BAT_HYST))  new_state = BAT_STATE_HIGH;
-            else if (bat_adc <  (BAT_LOW_MV - BAT_HYST))  new_state = BAT_STATE_LOW;
-            break;
-        case BAT_STATE_LOW:
-            if      (bat_adc >= (BAT_LOW_MV + BAT_HYST))  new_state = BAT_STATE_MID;
-            else if (bat_adc <  BAT_VLOW_MV)               new_state = BAT_STATE_CRITICAL;
+            if      (bat_adc >= (BAT_MID_MV  + BAT_HYST)) new_state = BAT_STATE_HIGH;
+            else if (bat_adc <   BAT_LOW_MV)               new_state = BAT_STATE_CRITICAL;
             break;
         case BAT_STATE_CRITICAL:
-            if (bat_adc >= BAT_LOW_MV)
-                new_state = BAT_STATE_LOW;
+            if (bat_adc >= (BAT_LOW_MV + BAT_HYST))
+                new_state = BAT_STATE_MID;
             break;
         default:
             new_state = BAT_STATE_CRITICAL;
@@ -368,7 +363,6 @@ void battery_led_task(void)
         case BAT_STATE_FULL:     led_set_pattern(LED_PATTERN_ALL_ON);  break;
         case BAT_STATE_HIGH:     led_set_pattern(LED_PATTERN_12_ON);   break;
         case BAT_STATE_MID:      led_set_pattern(LED_PATTERN_1_ON);    break;
-        case BAT_STATE_LOW:      led_set_pattern(LED_PATTERN_1_ON);    break;
         case BAT_STATE_CRITICAL:
             if (g_bat_shutdown_pending)
                 system_power_off_request(POWER_OFF_REASON_BATTERY_LOW);
@@ -468,10 +462,9 @@ void battery_state_init(uint16_t bat_adc)
     if      (bat_adc >= BAT_HIGH_MV) g_bat_state = BAT_STATE_FULL;
     else if (bat_adc >= BAT_MID_MV)  g_bat_state = BAT_STATE_HIGH;
     else if (bat_adc >= BAT_LOW_MV)  g_bat_state = BAT_STATE_MID;
-    else if (bat_adc >= BAT_VLOW_MV) g_bat_state = BAT_STATE_LOW;
     else                              g_bat_state = BAT_STATE_CRITICAL;
 
-    if (bat_adc < BAT_VLOW_MV)
+    if (bat_adc < BAT_LOW_MV)
         g_bat_critical_count = 1;
     else
         g_bat_critical_count = 0;
@@ -481,7 +474,7 @@ void battery_state_init(uint16_t bat_adc)
 
 bool battery_is_low_blink(void)
 {
-    return (g_bat_state == BAT_STATE_LOW);
+    return false;  /* LOW 状态已移除 */
 }
 
 

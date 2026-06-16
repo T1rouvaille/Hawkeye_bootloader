@@ -28,7 +28,7 @@ void stats_init(void);
  *
  * @param laser_on      三路激光当前开关状态 (gLaserOn[3] 的拷贝)
  * @param angle_mode    当前角度模式 (gAngleMode)
- * @param bat_state_low 当前是否处于 BAT_STATE_LOW 闪烁状态
+ * @param bat_state_low 当前电池低压指示 (始终 false, LOW 状态已移除)
  */
 void stats_tick_1s(const uint8_t laser_on[3],
                    uint8_t       angle_mode,

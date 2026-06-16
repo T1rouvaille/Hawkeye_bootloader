@@ -260,7 +260,7 @@ void hal_entry(void)
     }
     uint16_t bat_adc_boot = (uint16_t)(bat_sum / 4);
 
-    if (bat_adc_boot < 1450)
+    if (bat_adc_boot < BAT_LOW_MV)
     {
         /* 电压不够，不维持供电，喂狗等电容放完电自然断电 */
         LED1_OFF; LED2_OFF; LED3_OFF;

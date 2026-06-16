@@ -42,15 +42,12 @@
 /* 电池电压阈值 (ADC 原始值，非 mV)
  * 换算公式: mV = adc * 3300 * 48 / 5 / 4095 */
 #define BAT_FULL_MV             (2553U)     /* 满电 ≈ 20.0V */
-#define BAT_HIGH_MV             (2455U)     /* 高电 ≈ 19.0V */
-#define BAT_MID_MV              (2324U)     /* 中电 ≈ 17.5V */
-#define BAT_LOW_MV              (2004U)     /* 低电 ≈ 16.0V */
-#define BAT_VLOW_MV             (1450U)           /* 极低，触发关机 */
+#define BAT_HIGH_MV             (2442U)     /* 19.2V: FULL→HIGH 边界 */
+#define BAT_MID_MV              (2274U)     /* 17.9V: HIGH→MID  边界 */
+#define BAT_LOW_MV              (1835U)     /* 14.5V: MID →关断  边界 */
 
-
-/** 电池状态迟滞量 (ADC 原始值)
- *  设为 100 以抑制电源纹波和 ADC 噪声引起的状态抖动 */
-#define BAT_HYST                (120U)
+/** 电池状态迟滞量 (ADC 原始值) */
+#define BAT_HYST                (30U)
 
 /** 激光IR压降补偿 (ADC 原始值)
  *  激光开启时电池电压会跌落, 补偿后状态机判断更准确
