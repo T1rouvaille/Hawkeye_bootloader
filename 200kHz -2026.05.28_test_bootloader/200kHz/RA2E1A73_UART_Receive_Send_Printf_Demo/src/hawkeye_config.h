@@ -208,7 +208,7 @@
 #define POWCAL_VOLT_MIN_MV      0       /* 参考电压下限 */
 
 /* 保护阈值 */
-#define POWCAL_PD_MIN_MV        50      /* PD 初始值低于此值禁止校准 */
+#define POWCAL_PD_MIN_MV        30      /* PD 初始值低于此值禁止校准 */
 
 /* ======================================================================
  *  sleep mode time

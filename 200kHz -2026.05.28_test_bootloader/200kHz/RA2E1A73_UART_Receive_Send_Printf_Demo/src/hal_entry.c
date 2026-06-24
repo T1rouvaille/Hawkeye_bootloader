@@ -176,7 +176,13 @@ static void imu_calib_posture_task(void)
             {
                 g_calib_request      = false;
                 g_calib_laser_flash   = false;
-                laser_serial_ctrl_all(false);
+                /* 校准完成：停止闪烁，设 H 亮 / V1,V2 载波 */
+                gLaserOn[0] = 1;
+                gLaserOn[1] = 0;
+                gLaserOn[2] = 0;
+                set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+                set_laser2_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);
+                set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
 
                 imu_offset[0] = (int16_t)(g_calib_sum[0] / CALIBRATION_TRIALS);
                 imu_offset[1] = (int16_t)(g_calib_sum[1] / CALIBRATION_TRIALS);

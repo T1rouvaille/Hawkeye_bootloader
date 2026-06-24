@@ -85,14 +85,14 @@ static bool key_all_released(void)
 
 /*
  * 只在第一路开启时调用（全灭→有路），三路200kHz全部设初始值
- * 激活路=60，其余=4
+ * 激活路=LASER_DEFAULT_DUTY，其余=LASER_IDLE_DUTY
  */
 static void all_carrier_on(void)
 {
-    uint32_t d = g_ntc_low_temp ? (60 * NTC_LOW_TEMP_DUTY_PERCENT / 100) : 60;
-    set_laser1_200k_intensity   (gLaserOn[2] ? d : 20, TIMER_PIN);
-    set_laser2_200k_intensity (gLaserOn[0] ? d : 20, TIMER_PIN);
-    set_laser3_200k_intensity (gLaserOn[1] ? d : 20, GPT_IO_PIN_GTIOCA);
+    uint32_t d = g_ntc_low_temp ? (LASER_DEFAULT_DUTY * NTC_LOW_TEMP_DUTY_PERCENT / 100) : LASER_DEFAULT_DUTY;
+    set_laser1_200k_intensity   (gLaserOn[2] ? d : LASER_IDLE_DUTY, TIMER_PIN);
+    set_laser2_200k_intensity (gLaserOn[0] ? d : LASER_IDLE_DUTY, TIMER_PIN);
+    set_laser3_200k_intensity (gLaserOn[1] ? d : LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
 }
 
 /*
@@ -267,9 +267,9 @@ void key_handle_events(void)
                 }
                 else
                 {
-                    if (i == 2)      { set_laser1_200k_intensity(60, TIMER_PIN);          }
-                    else if (i == 0) { set_laser2_200k_intensity(60, TIMER_PIN);          }
-                    else if (i == 1) { set_laser3_200k_intensity(60, GPT_IO_PIN_GTIOCA);  }
+                    if (i == 2)      { set_laser1_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);          }
+                    else if (i == 0) { set_laser2_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);          }
+                    else if (i == 1) { set_laser3_200k_intensity(LASER_DEFAULT_DUTY, GPT_IO_PIN_GTIOCA);  }
                 }
                 
                 /* 保存激光状态 */
@@ -288,19 +288,19 @@ void key_handle_events(void)
                 {
                     if (i == 2)
                     {
-                        set_laser1_200k_intensity(20, TIMER_PIN);
+                        set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
                         duty00 = 60;
                         gLaserOn[i] = 0;
                     }
                     else if (i == 0)
                     {
-                        set_laser2_200k_intensity(20, TIMER_PIN);
+                        set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
                         duty11 = 60;
                         gLaserOn[i] = 0;
                     }
                     else if (i == 1)
                     {
-                        set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+                        set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
                         duty22 = 60;
                         gLaserOn[i] = 0;
                     }
@@ -370,7 +370,7 @@ void laser1_set(uint8_t on)
 {
     if (on)
     {
-        set_laser1_200k_intensity(60, TIMER_PIN);
+        set_laser1_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);
     }
     else
     {
@@ -383,7 +383,7 @@ void laser2_set(uint8_t on)
 {
     if (on)
     {
-        set_laser2_200k_intensity(60, TIMER_PIN);
+        set_laser2_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);
     }
     else
     {
@@ -396,7 +396,7 @@ void laser3_set(uint8_t on)
 {
     if (on)
     {
-        set_laser3_200k_intensity(60, GPT_IO_PIN_GTIOCA);
+        set_laser3_200k_intensity(LASER_DEFAULT_DUTY, GPT_IO_PIN_GTIOCA);
     }
     else
     {
@@ -446,9 +446,9 @@ bool laser_serial_ctrl(uint8_t idx, bool on)
         }
         else
         {
-            if (idx == 2)      { set_laser1_200k_intensity(60, TIMER_PIN);          }
-            else if (idx == 0) { set_laser2_200k_intensity(60, TIMER_PIN);          }
-            else if (idx == 1) { set_laser3_200k_intensity(60, GPT_IO_PIN_GTIOCA);  }
+            if (idx == 2)      { set_laser1_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);          }
+            else if (idx == 0) { set_laser2_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);          }
+            else if (idx == 1) { set_laser3_200k_intensity(LASER_DEFAULT_DUTY, GPT_IO_PIN_GTIOCA);  }
         }
 
         /* 保存激光状态 */
@@ -471,17 +471,17 @@ bool laser_serial_ctrl(uint8_t idx, bool on)
             /* 还有其它路亮着，只关该路 PWM 到 idle */
             if (idx == 2)
             {
-                set_laser1_200k_intensity(20, TIMER_PIN);
+                set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
                 duty00 = 60;
             }
             else if (idx == 0)
             {
-                set_laser2_200k_intensity(20, TIMER_PIN);
+                set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
                 duty11 = 60;
             }
             else /* idx == 1 */
             {
-                set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+                set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
                 duty22 = 60;
             }
             gLaserOn[idx] = 0;
@@ -646,9 +646,9 @@ void key_restore_on_boot(void)
     // 如果有激光需要开启
     if (laser_mask != 0) {
         // 设置PWM初始值（激活路=60，其余=20）
-        set_laser1_200k_intensity(gLaserOn[2] ? 60 : 20, TIMER_PIN);
-        set_laser2_200k_intensity(gLaserOn[0] ? 60 : 20, TIMER_PIN);
-        set_laser3_200k_intensity(gLaserOn[1] ? 60 : 20, GPT_IO_PIN_GTIOCA);
+        set_laser1_200k_intensity(gLaserOn[2] ? LASER_DEFAULT_DUTY : LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser2_200k_intensity(gLaserOn[0] ? LASER_DEFAULT_DUTY : LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser3_200k_intensity(gLaserOn[1] ? LASER_DEFAULT_DUTY : LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
         
         // 设置MOS状态，等待10ms后开EN1
         mos_delay_ms = 0;

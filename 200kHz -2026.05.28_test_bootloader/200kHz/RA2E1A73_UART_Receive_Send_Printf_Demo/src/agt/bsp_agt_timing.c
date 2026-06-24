@@ -11,6 +11,7 @@
 #include "hal_data.h"
 #include "r_gpt.h"
 #include "timer_pwm.h"
+#include "hawkeye_config.h"
 #include <adc/bsp_adc.h>
 #include "wdt/wdt.h"
 #include <adc/bsp_adc.h>
@@ -152,9 +153,9 @@ void GPT9_CALLBACK(timer_callback_args_t *p_args)
                 set_laser1_8470_intensity(6500, GPT_IO_PIN_GTIOCA);
                 set_laser2_8470_intensity(6500, TIMER_PIN);
                 set_laser3_8470_intensity(6500, GPT_IO_PIN_GTIOCA);
-                set_laser1_200k_intensity(20, TIMER_PIN);
-                set_laser2_200k_intensity(60, TIMER_PIN);
-                set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+                set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+                set_laser2_200k_intensity(LASER_DEFAULT_DUTY, TIMER_PIN);
+                set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
             }
             else
             {
@@ -162,9 +163,9 @@ void GPT9_CALLBACK(timer_callback_args_t *p_args)
                 set_laser1_8470_intensity(6500, GPT_IO_PIN_GTIOCA);
                 set_laser2_8470_intensity(6500, TIMER_PIN);
                 set_laser3_8470_intensity(6500, GPT_IO_PIN_GTIOCA);
-                set_laser1_200k_intensity(20, TIMER_PIN);
-                set_laser2_200k_intensity(20, TIMER_PIN);
-                set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+                set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+                set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+                set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
             }
         }
         return;  /* 校准闪烁期间不执行正常模式 PWM */
@@ -759,17 +760,17 @@ void laser_mode_0_4deg(void)
         if (gLaserOn[2])
             set_laser1_200k_intensity(duty00, TIMER_PIN);
         else
-            set_laser1_200k_intensity(20, TIMER_PIN);
+            set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
 
         if (gLaserOn[0])
             set_laser2_200k_intensity(duty11, TIMER_PIN);
         else
-            set_laser2_200k_intensity(20, TIMER_PIN);
+            set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
 
         if (gLaserOn[1])
             set_laser3_200k_intensity(duty22, GPT_IO_PIN_GTIOCA);
         else
-            set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+            set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
 
         pwm_in_high_phase    = true;
         sampled_this_cycle   = false;
@@ -910,9 +911,9 @@ void laser_mode_4_10deg(void)
     }
     else
     {
-        set_laser1_200k_intensity(20, TIMER_PIN);
-        set_laser2_200k_intensity(20, TIMER_PIN);
-        set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+        set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
 
         pwm_in_high_phase = false;
     }
@@ -989,9 +990,9 @@ void laser_mode_10_90deg(void)
         }
         else
         {
-            set_laser1_200k_intensity(20, TIMER_PIN);
-            set_laser2_200k_intensity(20, TIMER_PIN);
-            set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+            set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+            set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+            set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
             pwm_in_high_phase = false;
         }
         return;
@@ -1223,15 +1224,15 @@ void laser_mode_overheat(void)
 
     if (should_on)
     {
-        set_laser1_200k_intensity(gLaserOn[2] ? duty00 : 20, TIMER_PIN);
-        set_laser2_200k_intensity(gLaserOn[0] ? duty11 : 20, TIMER_PIN);
-        set_laser3_200k_intensity(gLaserOn[1] ? duty22 : 20, GPT_IO_PIN_GTIOCA);
+        set_laser1_200k_intensity(gLaserOn[2] ? duty00 : LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser2_200k_intensity(gLaserOn[0] ? duty11 : LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser3_200k_intensity(gLaserOn[1] ? duty22 : LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
     }
     else
     {
-        set_laser1_200k_intensity(20, TIMER_PIN);
-        set_laser2_200k_intensity(20, TIMER_PIN);
-        set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
+        set_laser1_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser2_200k_intensity(LASER_IDLE_DUTY, TIMER_PIN);
+        set_laser3_200k_intensity(LASER_IDLE_DUTY, GPT_IO_PIN_GTIOCA);
     }
 }
 void system_overheat_request(void)
