@@ -281,7 +281,7 @@ void hal_entry(void)
     GPT_Timing_Init();
     key_init();
     wdt_init();
-
+    LED1_ON; LED2_ON; LED3_ON;
     /*
      *  idx  period  offset  用途
      *   0     10      0     按键扫描
@@ -402,12 +402,12 @@ void hal_entry(void)
                 battery_temp_check();
 
                 /* 电池ADC原始值, 每秒输出一次 */
-                {
+/*                {
                     char bat_str[32];
                     snprintf(bat_str, sizeof(bat_str), "+BAT_ADC:%u\r\n",
                              Read_ADC_Voltage_Value_BAT());
                     uart9_send_blocking(bat_str);
-                }
+                }*/
             }
 
             /* ---- 按秒统计 + 无激光超时关机 ---- */

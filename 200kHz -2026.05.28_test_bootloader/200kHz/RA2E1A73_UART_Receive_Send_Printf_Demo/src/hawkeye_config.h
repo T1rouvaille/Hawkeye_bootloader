@@ -46,7 +46,7 @@
 #define BAT_LOW_MV              (1834U)     /* 14.5V: MID →关断  边界 */
 
 /** 开机最低电压阈值 (ADC 原始值) */
-#define BAT_BOOT_MIN_ADC        (1850U)
+#define BAT_BOOT_MIN_ADC        (1830U)
 
 
 /** 电池状态迟滞量 (ADC 原始值) */
@@ -56,9 +56,9 @@
  *  激光开启时电池电压会跌落, 补偿后状态机判断更准确
  *  H 电流最大, V1/V2 电流相近
  *  测量方法: 对比激光全关和全开时的电池ADC差值 */
-#define BAT_IR_DROP_H_ADC       0       /* H 激光压降补偿 (TODO: 实测后确定) */
-#define BAT_IR_DROP_V1_ADC      0       /* V1激光压降补偿 (TODO: 实测后确定) */
-#define BAT_IR_DROP_V2_ADC      0       /* V2激光压降补偿 (TODO: 实测后确定) */
+#define BAT_IR_DROP_H_ADC       40       /* H 激光压降补偿 (TODO: 实测后确定) */
+#define BAT_IR_DROP_V1_ADC      30       /* V1激光压降补偿 (TODO: 实测后确定) */
+#define BAT_IR_DROP_V2_ADC      30       /* V2激光压降补偿 (TODO: 实测后确定) */
 
 /** 低压关机确认次数 — battery_voltage_task() 每 50ms 调用一次
  *  5 次 × 50ms = 250ms 连续确认，防止瞬时掉压误关机 */
@@ -196,12 +196,12 @@
 /* 步进阈值 (x100, 单位 0.01mW) */
 #define POWCAL_THRESH_LARGE     50      /* |差值| > 0.50mW → 大步进 */
 #define POWCAL_THRESH_MED       20      /* |差值| > 0.20mW → 中步进 */
-#define POWCAL_THRESH_SMALL     5       /* 正误差阈值: 0.05mW, power>=target 且 power-target<=此值 → 到位 */
+#define POWCAL_THRESH_SMALL     10      /* 正误差阈值: 0.10mW, power>=target 且 power-target<=此值 → 到位 */
 
 /* 步进电压值 (mV) */
 #define POWCAL_STEP_LARGE_MV    200     /* 大步进电压 */
-#define POWCAL_STEP_MED_MV      50      /* 中步进电压 */
-#define POWCAL_STEP_SMALL_MV    10      /* 小步进电压 */
+#define POWCAL_STEP_MED_MV      100     /* 中步进电压 */
+#define POWCAL_STEP_SMALL_MV    50      /* 小步进电压 */
 
 /* 参考电压限幅 */
 #define POWCAL_VOLT_MAX_MV      3300    /* 参考电压上限 */

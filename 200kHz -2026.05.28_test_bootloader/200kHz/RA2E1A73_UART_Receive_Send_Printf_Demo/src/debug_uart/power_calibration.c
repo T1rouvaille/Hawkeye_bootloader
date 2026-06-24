@@ -177,7 +177,7 @@ powcal_status_t powcal_process(powcal_channel_t ch, int power)
     if (new_ref > last_ref_mv[ch] && power <= last_power[ch])
     {
         no_resp_cnt[ch]++;
-        if (no_resp_cnt[ch] >= 3)
+        if (no_resp_cnt[ch] >= 6)
         {
             /* 连续3次升压但光功率不涨 → 激光不响应 */
             powcal_state[ch] = POWCAL_STAT_NO_RESP;

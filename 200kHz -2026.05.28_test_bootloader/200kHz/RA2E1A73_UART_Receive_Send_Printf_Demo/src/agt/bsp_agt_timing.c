@@ -152,9 +152,9 @@ void GPT9_CALLBACK(timer_callback_args_t *p_args)
                 set_laser1_8470_intensity(6500, GPT_IO_PIN_GTIOCA);
                 set_laser2_8470_intensity(6500, TIMER_PIN);
                 set_laser3_8470_intensity(6500, GPT_IO_PIN_GTIOCA);
-                set_laser1_200k_intensity(60, TIMER_PIN);
+                set_laser1_200k_intensity(20, TIMER_PIN);
                 set_laser2_200k_intensity(60, TIMER_PIN);
-                set_laser3_200k_intensity(60, GPT_IO_PIN_GTIOCA);
+                set_laser3_200k_intensity(20, GPT_IO_PIN_GTIOCA);
             }
             else
             {
