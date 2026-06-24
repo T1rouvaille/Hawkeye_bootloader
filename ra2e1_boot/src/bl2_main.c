@@ -28,7 +28,7 @@
 #include "crc16.h"
 
 /* 电池低压阈值 (ADC 原始值, 14.5V) — 与 App hawkeye_config.h 保持一致 */
-#define BOOT_BAT_LOW_ADC    (1784U)
+#define BOOT_BAT_LOW_ADC    (1850U)
 
 /* 电源控制引脚 — 与 App bsp_led.h 保持一致 */
 #define BOOT_Batt_OFF       R_IOPORT_PinWrite(&g_ioport_ctrl, BSP_IO_PORT_04_PIN_09, BSP_IO_LEVEL_LOW)
